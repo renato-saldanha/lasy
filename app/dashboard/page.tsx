@@ -62,9 +62,7 @@ export default function DashboardPage() {
     setShowForm(false);
   };
 
-  const handleLeadUpdated = () => {
-    fetchLeads();
-  };
+  const handleLeadUpdated = () => fetchLeads();
 
   if (loading) {
     return (
