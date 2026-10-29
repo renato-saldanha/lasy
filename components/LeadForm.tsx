@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { getErrorMessage } from '@/lib/errors';
 import { Lead } from '@/types';
 
 interface LeadFormProps {
@@ -49,11 +50,7 @@ export default function LeadForm({ onSuccess, onCancel, lead }: LeadFormProps) {
 
       onSuccess();
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message || 'Erro ao salvar lead');
-      } else {
-        setError('Erro ao salvar lead');
-      }
+      setError(getErrorMessage(err, 'Erro ao salvar lead'));
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { getErrorMessage } from '@/lib/errors';
 
 interface InteractionFormProps {
   leadId: string;
@@ -40,11 +41,7 @@ export default function InteractionForm({ leadId, onSuccess, onCancel }: Interac
       if (error) throw error;
       onSuccess();
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message || 'Erro ao salvar interação');
-      } else {
-        setError('Erro ao salvar interação');
-      }
+      setError(getErrorMessage(err, 'Erro ao salvar interação'));
     } finally {
       setLoading(false);
     }

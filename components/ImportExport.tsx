@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { Lead } from '@/types';
 import { supabase } from '@/lib/supabase';
+import { getErrorMessage } from '@/lib/errors';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 
@@ -105,11 +106,7 @@ export default function ImportExport({ leads, onImport }: ImportExportProps) {
               setShowImport(false);
               if (fileInputRef.current) fileInputRef.current.value = '';
             } catch (err: unknown) {
-              if (err instanceof Error) {
-                setError(err.message || 'Erro ao importar leads');
-              } else {
-                setError('Erro ao importar leads');
-              }
+              setError(getErrorMessage(err, 'Erro ao importar leads'));
             } finally {
               setImporting(false);
             }
@@ -179,11 +176,7 @@ export default function ImportExport({ leads, onImport }: ImportExportProps) {
             setShowImport(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
           } catch (err: unknown) {
-            if (err instanceof Error) {
-              setError(err.message || 'Erro ao processar arquivo Excel');
-            } else {
-              setError('Erro ao processar arquivo Excel');
-            }
+            setError(getErrorMessage(err, 'Erro ao processar arquivo Excel'));
           } finally {
             setImporting(false);
           }
@@ -193,11 +186,7 @@ export default function ImportExport({ leads, onImport }: ImportExportProps) {
         throw new Error('Formato de arquivo não suportado. Use CSV ou XLSX.');
       }
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message || 'Erro ao importar arquivo');
-      } else {
-        setError('Erro ao importar arquivo');
-      }
+      setError(getErrorMessage(err, 'Erro ao importar arquivo'));
       setImporting(false);
     }
   };
