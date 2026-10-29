@@ -158,3 +158,18 @@ npm start
 ## 📄 Licença
 
 Este projeto é privado.
+
+## Conta de demonstração
+
+Para a demonstração publicada, a tela de login pode mostrar uma conta de teste com entrada em um clique. Ela só aparece quando as duas variáveis abaixo existem (sem elas, o login é o normal):
+
+```
+NEXT_PUBLIC_DEMO_EMAIL=demo@demo.example
+NEXT_PUBLIC_DEMO_PASSWORD=<senha da conta de teste>
+```
+
+Como montar:
+
+1. No Supabase, em **Authentication > Users > Add user**, crie o usuário de teste (marque **Auto Confirm User**).
+2. No **SQL Editor**, rode `supabase/seed_demo.sql` para criar leads e interações fictícios para esse usuário. O script pode ser executado de novo para restaurar os dados.
+3. Cadastre as duas variáveis no ambiente de deploy e publique de novo. Como começam com `NEXT_PUBLIC_`, os valores ficam visíveis para quem acessa o site: use só uma conta de teste.

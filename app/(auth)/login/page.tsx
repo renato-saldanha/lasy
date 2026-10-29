@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import { getErrorMessage } from '@/lib/errors';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -12,15 +13,18 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const demoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL;
+  const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD;
+  const hasDemo = Boolean(demoEmail && demoPassword);
+
+  const signIn = async (emailValue: string, passwordValue: string) => {
     setLoading(true);
     setError('');
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: emailValue,
+        password: passwordValue,
       });
 
       if (error) throw error;
@@ -30,14 +34,15 @@ export default function LoginPage() {
         router.refresh();
       }
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message || 'Erro ao fazer login');
-      } else {
-        setError('Erro ao fazer login');
-      }
+      setError(getErrorMessage(err, 'Erro ao fazer login'));
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await signIn(email, password);
   };
 
   return (
@@ -52,6 +57,26 @@ export default function LoginPage() {
           {error && (
             <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
               {error}
+            </div>
+          )}
+
+          {hasDemo && (
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-gray-700">
+              <p className="font-semibold text-[#222651] mb-1">Modo demonstração</p>
+              <p>
+                Conta de teste: <strong>{demoEmail}</strong> / <strong>{demoPassword}</strong>
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                Dados fictícios, compartilhados por todos os visitantes.
+              </p>
+              <button
+                type="button"
+                onClick={() => signIn(demoEmail!, demoPassword!)}
+                disabled={loading}
+                className="mt-3 w-full border border-[#0078b7] text-[#0078b7] py-2 rounded-lg font-semibold hover:bg-[#0078b7] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Entrar com a conta de demonstração
+              </button>
             </div>
           )}
 

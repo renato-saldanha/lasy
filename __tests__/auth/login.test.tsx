@@ -91,3 +91,40 @@ describe('Login Page', () => {
   });
 });
 
+describe('Login Page - modo demonstração', () => {
+  const originalEnv = process.env;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    process.env = { ...originalEnv };
+    delete process.env.NEXT_PUBLIC_DEMO_EMAIL;
+    delete process.env.NEXT_PUBLIC_DEMO_PASSWORD;
+  });
+
+  afterAll(() => {
+    process.env = originalEnv;
+  });
+
+  it('não mostra a conta de demonstração sem as variáveis', () => {
+    render(<LoginPage />);
+
+    expect(screen.queryByText('Modo demonstração')).not.toBeInTheDocument();
+  });
+
+  it('mostra a conta de teste e entra com um clique', async () => {
+    process.env.NEXT_PUBLIC_DEMO_EMAIL = 'demo@demo.example';
+    process.env.NEXT_PUBLIC_DEMO_PASSWORD = 'senha-demo';
+    mockSignIn.mockResolvedValue({ data: { user: { id: '1' } }, error: null });
+    const user = userEvent.setup();
+
+    render(<LoginPage />);
+
+    expect(screen.getByText('Modo demonstração')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /entrar com a conta de demonstração/i }));
+
+    await waitFor(() => {
+      expect(mockSignIn).toHaveBeenCalledWith({ email: 'demo@demo.example', password: 'senha-demo' });
+    });
+    expect(mockPush).toHaveBeenCalledWith('/dashboard');
+  });
+});
